@@ -8,8 +8,70 @@ import { Expenses } from './components/Expenses/Expenses';
 import { Incomes } from './components/Incomes/Incomes';
 import { Analysis } from './components/Analysis/Analysis';
 function App() {
-  const [tableExpanses, setTableExpanses] = useState(localStorage.getItem('expenses') != null ? JSON.parse(localStorage.getItem('expenses')) : [])
-  const [tableIncomes, setTableIncomes] = useState(localStorage.getItem('incomes') != null ? JSON.parse(localStorage.getItem('incomes')) : [])
+  useEffect(() => {
+    if (localStorage.getItem('expenses') == null) {
+      localStorage.setItem('expenses', JSON.stringify([
+        { categorie: 1, date: "2022-01-01 00:00:00", id: 1, name: "Test 1", price: 5000 },
+        { categorie: 1, date: "2022-02-01 00:00:00", id: 2, name: "Test 2", price: 3500 },
+        { categorie: 2, date: "2022-03-01 00:00:00", id: 3, name: "Test 3", price: 4000 },
+        { categorie: 4, date: "2022-03-01 12:00:00", id: 4, name: "Test 4", price: 4000 },
+        { categorie: 3, date: "2022-04-01 00:00:00", id: 5, name: "Test 5", price: 5000 },
+        { categorie: 3, date: "2022-05-01 00:00:00", id: 6, name: "Test 6", price: 3500 },
+        { categorie: 4, date: "2022-05-01 12:00:00", id: 7, name: "Test 7", price: 5000 },
+        { categorie: 5, date: "2022-06-01 00:00:00", id: 8, name: "Test 8", price: 4000 },
+        { categorie: 5, date: "2022-07-01 00:00:00", id: 9, name: "Test 9", price: 5000 },
+        { categorie: 5, date: "2022-08-01 00:00:00", id: 10, name: "Test 10", price: 3500 },
+        { categorie: 4, date: "2022-09-01 00:00:00", id: 11, name: "Test 11", price: 4000 },
+        { categorie: 4, date: "2022-10-01 00:00:00", id: 12, name: "Test 12", price: 3500 },
+      ]));
+    }
+    if (localStorage.getItem('incomes') == null) {
+      localStorage.setItem('incomes', JSON.stringify(
+        [
+          { categorie: 1, date: "2022-01-01 00:00:00", id: 1, name: "Test 1", price: 5000 },
+          { categorie: 1, date: "2022-02-01 00:00:00", id: 2, name: "Test 2", price: 3500 },
+          { categorie: 2, date: "2022-03-01 00:00:00", id: 3, name: "Test 3", price: 4000 },
+          { categorie: 4, date: "2022-03-01 12:00:00", id: 4, name: "Test 4", price: 4000 },
+          { categorie: 3, date: "2022-04-01 00:00:00", id: 5, name: "Test 5", price: 5000 },
+          { categorie: 3, date: "2022-05-01 00:00:00", id: 6, name: "Test 6", price: 3500 },
+          { categorie: 4, date: "2022-05-01 12:00:00", id: 7, name: "Test 7", price: 5000 },
+          { categorie: 5, date: "2022-06-01 00:00:00", id: 8, name: "Test 8", price: 4000 },
+          { categorie: 5, date: "2022-07-01 00:00:00", id: 9, name: "Test 9", price: 5000 },
+          { categorie: 5, date: "2022-08-01 00:00:00", id: 10, name: "Test 10", price: 3500 },
+          { categorie: 4, date: "2022-09-01 00:00:00", id: 11, name: "Test 11", price: 4000 },
+          { categorie: 4, date: "2022-10-01 00:00:00", id: 12, name: "Test 12", price: 3500 },
+        ]));
+    }
+  }, [])
+  const [tableExpanses, setTableExpanses] = useState(localStorage.getItem('expenses') != null ? JSON.parse(localStorage.getItem('expenses')) : [
+    { categorie: 1, date: "2022-01-01 00:00:00", id: 1, name: "Test 1", price: 5000 },
+    { categorie: 1, date: "2022-02-01 00:00:00", id: 2, name: "Test 2", price: 3500 },
+    { categorie: 2, date: "2022-03-01 00:00:00", id: 3, name: "Test 3", price: 4000 },
+    { categorie: 4, date: "2022-03-01 12:00:00", id: 4, name: "Test 4", price: 4000 },
+    { categorie: 3, date: "2022-04-01 00:00:00", id: 5, name: "Test 5", price: 5000 },
+    { categorie: 3, date: "2022-05-01 00:00:00", id: 6, name: "Test 6", price: 3500 },
+    { categorie: 4, date: "2022-05-01 12:00:00", id: 7, name: "Test 7", price: 5000 },
+    { categorie: 5, date: "2022-06-01 00:00:00", id: 8, name: "Test 8", price: 4000 },
+    { categorie: 5, date: "2022-07-01 00:00:00", id: 9, name: "Test 9", price: 5000 },
+    { categorie: 5, date: "2022-08-01 00:00:00", id: 10, name: "Test 10", price: 3500 },
+    { categorie: 4, date: "2022-09-01 00:00:00", id: 11, name: "Test 11", price: 4000 },
+    { categorie: 4, date: "2022-10-01 00:00:00", id: 12, name: "Test 12", price: 3500 },
+  ])
+
+  const [tableIncomes, setTableIncomes] = useState(localStorage.getItem('incomes') != null ? JSON.parse(localStorage.getItem('incomes')) : [
+    { categorie: 1, date: "2022-01-01 00:00:00", id: 1, name: "Test 1", price: 5000 },
+    { categorie: 1, date: "2022-02-01 00:00:00", id: 2, name: "Test 2", price: 3500 },
+    { categorie: 2, date: "2022-03-01 00:00:00", id: 3, name: "Test 3", price: 4000 },
+    { categorie: 4, date: "2022-03-01 12:00:00", id: 4, name: "Test 4", price: 4000 },
+    { categorie: 3, date: "2022-04-01 00:00:00", id: 5, name: "Test 5", price: 5000 },
+    { categorie: 3, date: "2022-05-01 00:00:00", id: 6, name: "Test 6", price: 3500 },
+    { categorie: 4, date: "2022-05-01 12:00:00", id: 7, name: "Test 7", price: 5000 },
+    { categorie: 5, date: "2022-06-01 00:00:00", id: 8, name: "Test 8", price: 4000 },
+    { categorie: 5, date: "2022-07-01 00:00:00", id: 9, name: "Test 9", price: 5000 },
+    { categorie: 5, date: "2022-08-01 00:00:00", id: 10, name: "Test 10", price: 3500 },
+    { categorie: 4, date: "2022-09-01 00:00:00", id: 11, name: "Test 11", price: 4000 },
+    { categorie: 4, date: "2022-10-01 00:00:00", id: 12, name: "Test 12", price: 3500 },
+  ])
 
   const [nameE, setNameE] = useState("")
   const [categorieE, setCategorieE] = useState("")
@@ -31,6 +93,8 @@ function App() {
     setCategorieI("")
     setPriceI("")
   }, [tableExpanses, tableIncomes])
+
+
 
   useEffect(() => {
     if (categorieAnalysisE == "") {
@@ -131,6 +195,7 @@ function App() {
         currentDate = `${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${currentDate.getDate()} ${currentDate.toLocaleTimeString()}`
         let newTableExpanses = [...tableExpanses, { id: tableExpanses.length > 0 ? tableExpanses[tableExpanses.length - 1].id + 1 : 1, name: nameE, categorie: parseInt(categorieE), price: parseFloat(priceE), date: currentDate }]
         setTableExpanses([...newTableExpanses])
+        console.log(newTableExpanses)
         localStorage.setItem('expenses', JSON.stringify(newTableExpanses))
         Array.from(event.target.previousSibling.children).forEach(formSection => {
           formSection.children[1].value = ""

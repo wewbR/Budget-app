@@ -1,7 +1,6 @@
 import React from 'react';
 import { Bar } from 'react-chartjs-2';
 import AnalysisCss from './Analysis.module.css';
-import 'chartjs-adapter-date-fns';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -9,8 +8,7 @@ import {
   BarElement,
   Title,
   Tooltip,
-  Legend,
-  TimeScale
+  Legend
 } from 'chart.js';
 ChartJS.register(
   CategoryScale,
@@ -18,88 +16,51 @@ ChartJS.register(
   BarElement,
   Title,
   Tooltip,
-  Legend,
-  TimeScale
+  Legend
 )
 
 
 export function Analysis(props) {
-  //functions to get date from localStorage
-  function getMyRightDate(date) {
-    let newD = date.split(" ")[0];
-    return newD;
-  }
-  function getMyDay(date) {
-    let newD = date.split('-')[2];
-    return newD;
-  }
-  //function to get value by categorie
-  function sumDatesByDay(datesArray, tableExpensesorIncomes, categorieId) {
-    let obtainedDays = [];
-    for (let i of datesArray) {
-      obtainedDays.push(getMyDay(i));
-    }
-    let objectData = {};
-    for (let i of obtainedDays) {
-      objectData[i] = 0;
-    }
-    if (categorieId == 0) {
-      for (let j in objectData) {
-        for (let i of tableExpensesorIncomes) {
-          if (getMyDay(getMyRightDate(i.date)) == j) {
-            objectData[j] += i.price;
-          }
-        }
+  //function to get value for each month
+  function getMonthValue(month, data) {
+    let value = 0;
+    for (let i of data) {
+      if (i.date.split(' ')[0].split("-")[1] == month) {
+        value += i.price
       }
     }
-    else {
-      for (let j in objectData) {
-        for (let i of tableExpensesorIncomes) {
-          if (getMyDay(getMyRightDate(i.date)) == j && i.categorie == categorieId) {
-            objectData[j] += i.price;
-          }
-        }
-      }
-    }
-    return objectData;
+    return value
   }
   let dataE;
   let optionsE;
   let dataI;
   let optionsI;
   //Expenses Chart:
-  if(localStorage.getItem('expenses')!=null){
+  if (localStorage.getItem('expenses') != null) {
     const getLocalStorageE = JSON.parse(localStorage.getItem('expenses'));
     let getLocalStorageELabel;
-  
+
     if (props.categorieAnalysisE == 0) {
       getLocalStorageELabel = getLocalStorageE;
     }
     else {
       getLocalStorageELabel = getLocalStorageE.filter(expense => expense.categorie == props.categorieAnalysisE);
     }
-  
-    let labelsD = [...new Set(getLocalStorageELabel.map(expense => getMyRightDate(expense.date)))];
-    const sumDatesValues = sumDatesByDay(labelsD, getLocalStorageE, props.categorieAnalysisE);
-    const dataToUse = [];
-    for (let i in sumDatesValues) {
-      dataToUse.push(sumDatesValues[i]);
+    let dataToUse = [];
+    for (let i = 1; i <= 12; i++) {
+      dataToUse.push(getMonthValue(i, getLocalStorageELabel))
     }
-  
-    labelsD.sort();
-  
     dataE = {
-      labels: labelsD,
+      labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
       datasets: [
         {
           label: props.categorieObjetE.filter(categorie => categorie.id == props.categorieAnalysisE) == 0 ? "All Expense Categories" : props.categorieObjetE.filter(categorie => categorie.id == props.categorieAnalysisE)[0].libelle,
-          data: dataToUse,
           borderColor: ['rgb(53,162,235)', 'rgb(255,26,104)', "rgb(255,159,64)", "rgb(0,206,86)"],
           backgroundColor: ["rgba(53,162,235,0.4)", "rgba(255,26,104,0.4)", "rgba(255,159,64,0.4)", "rgba(0,206,86,0.4)"]
+          , data: dataToUse
         }
       ]
     };
-  
     optionsE = {
       responsive: true,
       plugins: {
@@ -117,88 +78,70 @@ export function Analysis(props) {
         }
       },
       scales: {
-        x: {
-          type: 'time',
-          time: {
-            unit: 'day'
-          }
-        },
         y: {
           beginAtZero: true
         }
       }
     };
-  
   }
-  //Incomes Chart:
-if(localStorage.getItem('incomes')!=null){
-const getLocalStorageI = JSON.parse(localStorage.getItem('incomes'));
-let getLocalStorageILabel;
+  // Incomes Chart:
+  if (localStorage.getItem('incomes') != null) {
+    const getLocalStorageI = JSON.parse(localStorage.getItem('incomes'));
+    let getLocalStorageILabel;
 
-if (props.categorieAnalysisI == 0) {
-  getLocalStorageILabel = getLocalStorageI;
-}
-else {
-  getLocalStorageILabel = getLocalStorageI.filter(income => income.categorie == props.categorieAnalysisI);
-}
-
-let labelsDI = [...new Set(getLocalStorageILabel.map(income => getMyRightDate(income.date)))];
-const sumDatesValuesI = sumDatesByDay(labelsDI, getLocalStorageI, props.categorieAnalysisI);
-const dataToUseI = [];
-for (let i in sumDatesValuesI) {
-  dataToUseI.push(sumDatesValuesI[i]);
-}
-
-labelsDI.sort();
-
-dataI = {
-  labels: labelsDI,
-  datasets: [
-    {
-      label: props.categorieObjetI.filter(categorie => categorie.id == props.categorieAnalysisI) == 0 ? "All Income Categories" : props.categorieObjetI.filter(categorie => categorie.id == props.categorieAnalysisI)[0].libelle,
-      data: dataToUseI,
-      borderColor: ['rgb(53,162,235)', 'rgb(255,26,104)'],
-      backgroundColor: ["rgba(53,162,235,0.4)", "rgba(255,26,104,0.4)"]
+    if (props.categorieAnalysisI == 0) {
+      getLocalStorageILabel = getLocalStorageI;
     }
-  ]
-};
-
-optionsI = {
-  responsive: true,
-  plugins: {
-    legend: {
-      position: "top"
-    },
-    title: {
-      display: true,
-      text: "Incomes Chart"
-    },
-    tooltip: {
-      yAlign: 'top',
-      displayColors: false,
-      padding: 10
+    else {
+      getLocalStorageILabel = getLocalStorageI.filter(income => income.categorie == props.categorieAnalysisI);
     }
-  },
-  scales: {
-    x: {
-      type: 'time',
-      time: {
-        unit: 'day'
+
+    let dataToUseI = [];
+    for (let i = 1; i <= 12; i++) {
+      dataToUseI.push(getMonthValue(i, getLocalStorageILabel))
+    }
+
+    dataI = {
+      labels: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+      datasets: [
+        {
+          label: props.categorieObjetI.filter(categorie => categorie.id == props.categorieAnalysisI) == 0 ? "All Income Categories" : props.categorieObjetI.filter(categorie => categorie.id == props.categorieAnalysisI)[0].libelle,
+          data: dataToUseI,
+          borderColor: ['rgb(53,162,235)', 'rgb(255,26,104)', "rgb(255,159,64)", "rgb(0,206,86)"],
+          backgroundColor: ["rgba(53,162,235,0.4)", "rgba(255,26,104,0.4)", "rgba(255,159,64,0.4)", "rgba(0,206,86,0.4)"]
+        }
+      ]
+    };
+
+    optionsI = {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "top"
+        },
+        title: {
+          display: true,
+          text: "Incomes Chart"
+        },
+        tooltip: {
+          yAlign: 'top',
+          displayColors: false,
+          padding: 10
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true
+        }
       }
-    },
-    y: {
-      beginAtZero: true
-    }
+    };
   }
-};
 
-}
-  
-  
+
   return <div className={AnalysisCss.Analysis}>
     <div className={AnalysisCss.header}>Analysis</div>
     <div className={AnalysisCss.Charts}>
-      {localStorage.getItem('expenses')!=null?<div className={AnalysisCss.AnalysisExpenses}>
+      {localStorage.getItem('expenses') != null && JSON.parse(localStorage.getItem('expenses')).length!=0? <div className={AnalysisCss.AnalysisExpenses}>
         <div className={AnalysisCss.headerChart}>
           <label htmlFor="categorie">Expenses Categorie:</label>
           <select onChange={e => props.filterCategorieAnalysisE(e)} type="text" name='categorie'>
@@ -207,8 +150,8 @@ optionsI = {
           </select>
         </div>
         <Bar data={dataE} options={optionsE} width={600} height={400} />
-      </div>:<h1>No Expenses Inserted Yet</h1>}
-      {localStorage.getItem('incomes')!=null?<div className={AnalysisCss.AnalysisIncomes}>
+      </div> : <h1>No Expenses Inserted Yet</h1>}
+      {localStorage.getItem('incomes') != null && JSON.parse(localStorage.getItem('incomes')).length!=0? <div className={AnalysisCss.AnalysisIncomes}>
         <div className={AnalysisCss.headerChart}>
           <label htmlFor="categorie">Incomes Categorie:</label>
           <select onChange={e => props.filterCategorieAnalysisI(e)} type="text" name='categorie'>
@@ -217,7 +160,7 @@ optionsI = {
           </select>
         </div>
         <Bar data={dataI} options={optionsI} width={600} height={400} />
-      </div>:<h1>No Incomes Inserted Yet</h1>}
+      </div> : <h1>No Incomes Inserted Yet</h1>}
     </div>
 
   </div>;
